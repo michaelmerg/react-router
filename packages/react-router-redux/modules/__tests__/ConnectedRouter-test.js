@@ -58,24 +58,44 @@ describe('A <ConnectedRouter>', () => {
     expect(store.getState()).toHaveProperty('router.location.pathname', '/foo')
   })
 
+  it('updates the store with location changes in sub-component', () => {
+
+    class HistoryPusher extends React.Component {
+      componentDidMount() {
+        this.props.history.push(this.props.to)
+      }
+      render() {
+        return null
+      }
+    }
+
+    renderer.create(
+      <ConnectedRouter store={store} history={history}>
+        <HistoryPusher history={history} to='/foo' />
+      </ConnectedRouter>
+    )
+
+    expect(store.getState()).toHaveProperty('router.location.pathname', history.location.pathname)
+  })
+
   describe('with children', () => {
-    it('to render', () => {      
+    it('to render', () => {
       const tree = renderer.create(
         <ConnectedRouter store={store} history={history}>
           <div>Test</div>
         </ConnectedRouter>
       ).toJSON()
-      
+
       expect(tree).toMatchSnapshot()
     })
   })
 
   describe('with no children', () => {
-    it('to render', () => {      
+    it('to render', () => {
       const tree = renderer.create(
         <ConnectedRouter store={store} history={history} />
       ).toJSON()
-      
+
       expect(tree).toMatchSnapshot()
     })
   })
